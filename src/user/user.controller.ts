@@ -6,8 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  HttpException,
-  HttpStatus,
   UsePipes,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -23,92 +21,36 @@ export class UserController {
   @Post()
   @UsePipes(new ZodValidationPipe(userZodSchema))
   async create(@Body() createUserDto: CreateUserDto) {
-    try {
-      return await this.userService.create(createUserDto);
-    } catch (error) {
-      console.error(error);
-      throw new HttpException(
-        'Error: ' + error.message,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    return await this.userService.create(createUserDto);
   }
 
   @Get()
   async findAll() {
-    try {
-      return await this.userService.findAll();
-    } catch (error) {
-      console.error(error);
-      throw new HttpException(
-        'Error: ' + error.message,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    return await this.userService.findAll();
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    try {
-      return await this.userService.findOne(id);
-    } catch (error) {
-      console.error(error);
-      throw new HttpException(
-        'Error: ' + error.message,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    return await this.userService.findOne(id);
   }
 
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    try {
-      return await this.userService.update(id, updateUserDto);
-    } catch (error) {
-      console.error(error);
-      throw new HttpException(
-        'Error: ' + error.message,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    return await this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    try {
-      return await this.userService.remove(id);
-    } catch (error) {
-      console.error(error);
-      throw new HttpException(
-        'Error: ' + error.message,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    return await this.userService.remove(id);
   }
 
   @Get('/email/:email')
   async findUsingEmail(@Param('email') email: string) {
-    try {
-      return await this.userService.findUsingEmail(email);
-    } catch (error) {
-      console.error(error);
-      throw new HttpException(
-        'Error: ' + error.message,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    return await this.userService.findUsingEmail(email);
   }
 
   @Get('/cpf/:cpf')
   async findUsingCpf(@Param('cpf') cpf: string) {
-    try {
-      return await this.userService.findUsingCpf(cpf);
-    } catch (error) {
-      console.error(error);
-      throw new HttpException(
-        'Error: ' + error.message,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    return await this.userService.findUsingCpf(cpf);
   }
 }
