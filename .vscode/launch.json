@@ -5,19 +5,13 @@
       "type": "node",
       "request": "launch",
       "name": "Debug Nest Framework",
-      "args": ["${workspaceFolder}/src/main.ts"],
-      "runtimeArgs": [
-        "--nolazy",
-        "-r",
-        "ts-node/register",
-        "-r",
-        "tsconfig-paths/register"
-      ],
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start:debug", "--", "--inspect-brk"],
+      "autoAttachChildProcesses": true,
+      "restart": true,
       "sourceMaps": true,
-      "envFile": "${workspaceFolder}/.env",
-      "cwd": "${workspaceRoot}",
-      "console": "integratedTerminal",
-      "protocol": "inspector"
+      "stopOnEntry": false,
+      "console": "integratedTerminal"
     }
   ]
 }

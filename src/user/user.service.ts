@@ -94,6 +94,16 @@ export class UserService {
   }
 
   async remove(id: string) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!user) {
+      throw new HttpException('User cannot be find', HttpStatus.NOT_FOUND);
+    }
+
     await this.prisma.user.delete({
       where: {
         id: id,

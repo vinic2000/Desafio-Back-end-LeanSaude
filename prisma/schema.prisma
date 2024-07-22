@@ -14,10 +14,18 @@ datasource db {
 }
 
 model User {
-  id        String @id @default(uuid())
+  id        String   @id @default(uuid())
   full_name String
-  cpf       String @unique
-  email     String @unique
+  cpf       String   @unique
+  email     String   @unique
   password  String
   type_user String
+  Conta     Account?
+}
+
+model Account {
+  id      String @id @default(uuid())
+  balance Float
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String @unique
 }
