@@ -37,6 +37,7 @@ const prismaMock = {
     findUsingEmail: jest.fn().mockResolvedValue(fakeUsers[0]),
     update: jest.fn().mockResolvedValue(fakeUsers[0]),
     delete: jest.fn(), // O método delete não retorna nada
+    findFirst: jest.fn().mockResolvedValue(fakeUsers[0]),
   },
 };
 

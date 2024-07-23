@@ -32,10 +32,13 @@ export class AccountsService {
     return account;
   }
 
-  async addBalance(idConta: string, balance: number) {
-    const account = await this.prisma.account.findFirst({
+  async addBalance(idAccount: string, balance: number) {
+    if (!idAccount) {
+      throw new HttpException("idAccount don't send", HttpStatus.NOT_FOUND);
+    }
+    const account = await this.prisma.account.findUnique({
       where: {
-        id: idConta,
+        id: idAccount,
       },
     });
 
@@ -54,7 +57,7 @@ export class AccountsService {
 
     return await this.prisma.account.update({
       where: {
-        id: idConta,
+        id: idAccount,
       },
       data: {
         balance: result,
@@ -62,10 +65,10 @@ export class AccountsService {
     });
   }
 
-  async removeBalance(idConta: string, balance: number) {
+  async removeBalance(idAccount: string, balance: number) {
     const account = await this.prisma.account.findUnique({
       where: {
-        id: idConta,
+        id: idAccount,
       },
     });
 
@@ -91,7 +94,7 @@ export class AccountsService {
 
     return await this.prisma.account.update({
       where: {
-        id: idConta,
+        id: idAccount,
       },
       data: {
         balance: result,
