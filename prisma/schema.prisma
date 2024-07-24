@@ -29,3 +29,13 @@ model Account {
   user    User   @relation(fields: [userId], references: [id])
   userId  String @unique
 }
+
+model log {
+  id     String   @id @default(uuid())
+  payer  String
+  payee  String
+  action String
+  value  Float
+  date   DateTime @default(now())
+  error  String
+}
