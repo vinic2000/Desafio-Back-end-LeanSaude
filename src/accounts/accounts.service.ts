@@ -38,7 +38,7 @@ export class AccountsService {
         error: 'user already have an account',
         payee: userId,
         payer: '',
-        value: null,
+        value: 0,
       });
 
       throw new HttpException(
@@ -64,7 +64,7 @@ export class AccountsService {
       error: 'Account created',
       payee: userId,
       payer: '',
-      value: null,
+      value: 0,
     });
 
     return account;
@@ -192,5 +192,9 @@ export class AccountsService {
     });
 
     return resultUpdate;
+  }
+
+  async all() {
+    return await this.prisma.account.findMany();
   }
 }

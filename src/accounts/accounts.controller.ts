@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Patch, Param } from '@nestjs/common';
+import { Controller, Post, Body, Patch, Param, Get } from '@nestjs/common';
 import { AccountsService } from './accounts.service';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
@@ -32,5 +32,10 @@ export class AccountsController {
       idConta,
       updateAccountDto.balance,
     );
+  }
+
+  @Get()
+  async all() {
+    return await this.accountsService.all();
   }
 }
