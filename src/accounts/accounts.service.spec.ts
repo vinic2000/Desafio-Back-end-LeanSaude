@@ -3,10 +3,11 @@ import { AccountsService } from './accounts.service';
 
 import { PrismaService } from '../prisma.service';
 import { randomUUID } from 'crypto';
-import { User } from '@prisma/client';
+import { Account, log, User } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { generate } from 'gerador-validador-cpf';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { LogsService } from 'src/logs/logs.service';
 
 describe('AccountsService', () => {
   let service: AccountsService;
@@ -22,21 +23,54 @@ describe('AccountsService', () => {
     },
   ];
 
-  const accountMock = {
+  const accountMock: Account = {
     id: randomUUID(),
     balance: 1000,
     userId: userMock[0].id,
   };
+
+  const logMock: log = {
+    action: 'create',
+    date: new Date(),
+    error: '',
+    payee: '',
+    payer: '',
+    value: 0,
+    id: randomUUID(),
+  };
+
+  const accountMockArray: Account[] = [
+    {
+      id: randomUUID(),
+      balance: 1000,
+      userId: userMock[0].id,
+    },
+    {
+      id: randomUUID(),
+      balance: 1000,
+      userId: userMock[0].id,
+    },
+    {
+      id: randomUUID(),
+      balance: 1000,
+      userId: userMock[0].id,
+    },
+  ];
 
   const prismaMock = {
     account: {
       create: jest.fn().mockReturnValue(accountMock),
       findUnique: jest.fn().mockReturnValue(accountMock),
       update: jest.fn().mockReturnValue(accountMock),
+      findMany: jest.fn().mockReturnValue(accountMockArray),
     },
 
     user: {
       findUnique: jest.fn().mockReturnValue(userMock[0]),
+    },
+
+    log: {
+      create: jest.fn().mockReturnValue(logMock),
     },
   };
   beforeEach(async () => {
@@ -44,6 +78,7 @@ describe('AccountsService', () => {
       providers: [
         AccountsService,
         { provide: PrismaService, useValue: prismaMock },
+        LogsService,
       ],
     }).compile();
 
@@ -55,6 +90,32 @@ describe('AccountsService', () => {
   });
 
   it('Should be created a new account sending a user id', async () => {
+    const prismaMock = {
+      account: {
+        create: jest.fn().mockReturnValue(accountMock),
+        findUnique: jest.fn().mockReturnValue(null),
+        update: jest.fn().mockReturnValue(accountMock),
+      },
+
+      user: {
+        findUnique: jest.fn().mockReturnValue(userMock[0]),
+      },
+
+      log: {
+        create: jest.fn().mockReturnValue(logMock),
+      },
+    };
+
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        AccountsService,
+        { provide: PrismaService, useValue: prismaMock },
+        LogsService,
+      ],
+    }).compile();
+
+    service = module.get<AccountsService>(AccountsService);
+
     const user: User = {
       cpf: generate({ format: true }),
       email: faker.internet.email(),
@@ -79,9 +140,11 @@ describe('AccountsService', () => {
           findUnique: jest.fn().mockReturnValue(accountMock),
           update: jest.fn().mockReturnValue(accountMock),
         },
-
         user: {
           findUnique: jest.fn().mockReturnValue(null),
+        },
+        log: {
+          create: jest.fn(),
         },
       };
 
@@ -89,6 +152,7 @@ describe('AccountsService', () => {
         providers: [
           AccountsService,
           { provide: PrismaService, useValue: prismaMock },
+          LogsService,
         ],
       }).compile();
 
@@ -118,6 +182,32 @@ describe('AccountsService', () => {
 
   it("Should be return exception when don't find userId in table users", async () => {
     try {
+      const prismaMock = {
+        account: {
+          create: jest.fn().mockReturnValue(accountMock),
+          findUnique: jest.fn().mockReturnValue(accountMock),
+          update: jest.fn().mockReturnValue(accountMock),
+        },
+
+        user: {
+          findUnique: jest.fn().mockReturnValue(null),
+        },
+
+        log: {
+          create: jest.fn().mockReturnValue(logMock),
+        },
+      };
+
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [
+          AccountsService,
+          { provide: PrismaService, useValue: prismaMock },
+          LogsService,
+        ],
+      }).compile();
+
+      service = module.get<AccountsService>(AccountsService);
+
       await service.create({ userId: faker.string.uuid() });
     } catch (error) {
       expect(error).toBeInstanceOf(HttpException);
@@ -162,12 +252,17 @@ describe('AccountsService', () => {
         user: {
           findUnique: jest.fn().mockReturnValue(userMock[0]),
         },
+
+        log: {
+          create: jest.fn().mockReturnValue(logMock),
+        },
       };
 
       const module: TestingModule = await Test.createTestingModule({
         providers: [
           AccountsService,
           { provide: PrismaService, useValue: prismaMock },
+          LogsService,
         ],
       }).compile();
 
@@ -246,12 +341,16 @@ describe('AccountsService', () => {
         user: {
           findUnique: jest.fn().mockReturnValue(userMock[0]),
         },
+        log: {
+          create: jest.fn(),
+        },
       };
 
       const module: TestingModule = await Test.createTestingModule({
         providers: [
           AccountsService,
           { provide: PrismaService, useValue: prismaMock },
+          LogsService,
         ],
       }).compile();
 
@@ -323,5 +422,9 @@ describe('AccountsService', () => {
         "User can't have negative balance.",
       );
     }
+  });
+
+  it('Should be return all account the database', async () => {
+    expect(await service.all()).toEqual(accountMockArray);
   });
 });

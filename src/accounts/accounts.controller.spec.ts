@@ -26,6 +26,35 @@ describe('AccountsController', () => {
     userId: userFake.id,
   };
 
+  const userMock: User[] = [
+    {
+      cpf: generate({ format: true }),
+      email: faker.internet.email(),
+      full_name: faker.person.fullName(),
+      password: faker.internet.password(),
+      type_user: 'user',
+      id: randomUUID(),
+    },
+  ];
+
+  const accountMockArray: Account[] = [
+    {
+      id: randomUUID(),
+      balance: 1000,
+      userId: userMock[0].id,
+    },
+    {
+      id: randomUUID(),
+      balance: 1000,
+      userId: userMock[0].id,
+    },
+    {
+      id: randomUUID(),
+      balance: 1000,
+      userId: userMock[0].id,
+    },
+  ];
+
   const serviceMock = {
     create: jest.fn().mockReturnValue(accountFake),
     addBalance: jest.fn().mockReturnValue({
@@ -38,6 +67,7 @@ describe('AccountsController', () => {
       id: accountFake.id,
       userId: userFake.id,
     }),
+    all: jest.fn().mockReturnValue(accountMockArray),
   };
 
   beforeEach(async () => {
@@ -88,5 +118,10 @@ describe('AccountsController', () => {
       id: accountFake.id,
       userId: userFake.id,
     });
+  });
+
+  it('Route Get /', async () => {
+    const result = await controller.all();
+    expect(result).toEqual(accountMockArray);
   });
 });
