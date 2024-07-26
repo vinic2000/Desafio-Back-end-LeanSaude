@@ -8,6 +8,7 @@ import { faker } from '@faker-js/faker';
 import { randomUUID } from 'crypto';
 import * as validate from 'uuid-validate';
 import { User } from '@prisma/client';
+import { JwtService } from '@nestjs/jwt';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -48,6 +49,7 @@ describe('UserController', () => {
       providers: [
         { provide: UserService, useValue: userServiceMock },
         PrismaService,
+        JwtService,
       ],
     }).compile();
 
@@ -121,6 +123,7 @@ describe('UserController', () => {
       providers: [
         { provide: UserService, useValue: updateMock },
         PrismaService,
+        JwtService,
       ],
     }).compile();
 

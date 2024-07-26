@@ -4,6 +4,8 @@ import { TransferService } from './transfer.service';
 import { LogsService } from 'src/logs/logs.service';
 import { PrismaService } from '../prisma.service';
 import { randomUUID } from 'crypto';
+import { JwtService } from '@nestjs/jwt';
+
 describe('TransferController', () => {
   let controller: TransferController;
 
@@ -18,6 +20,7 @@ describe('TransferController', () => {
         { provide: TransferService, useValue: transferServiceMock },
         LogsService,
         PrismaService,
+        JwtService,
       ],
     }).compile();
 
