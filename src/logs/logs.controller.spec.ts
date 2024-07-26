@@ -5,6 +5,7 @@ import { PrismaService } from '../prisma.service';
 import { faker } from '@faker-js/faker';
 import { randomUUID } from 'crypto';
 import { log } from '@prisma/client';
+import { JwtService } from '@nestjs/jwt';
 
 describe('LogsController', () => {
   let controller: LogsController;
@@ -43,6 +44,7 @@ describe('LogsController', () => {
       providers: [
         LogsService,
         { provide: PrismaService, useValue: prismaMock },
+        JwtService,
       ],
     }).compile();
 

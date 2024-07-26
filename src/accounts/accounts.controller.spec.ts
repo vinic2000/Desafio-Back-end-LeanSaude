@@ -7,6 +7,7 @@ import { Account, User } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { faker } from '@faker-js/faker';
 import { generate } from 'gerador-validador-cpf';
+import { JwtService } from '@nestjs/jwt';
 
 describe('AccountsController', () => {
   let controller: AccountsController;
@@ -76,6 +77,7 @@ describe('AccountsController', () => {
       providers: [
         { provide: AccountsService, useValue: serviceMock },
         PrismaService,
+        JwtService,
       ],
     }).compile();
 

@@ -1,17 +1,28 @@
-import { Controller, Post, Body, Patch, Param, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Get,
+  UseGuards,
+} from '@nestjs/common';
 import { AccountsService } from './accounts.service';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('accounts')
 export class AccountsController {
   constructor(private readonly accountsService: AccountsService) {}
 
+  @UseGuards(AuthGuard)
   @Post()
   async create(@Body() createAccountDto: CreateAccountDto) {
     return await this.accountsService.create(createAccountDto);
   }
 
+  @UseGuards(AuthGuard)
   @Patch('/add/:idConta')
   async addBalance(
     @Param('idConta') idConta: string,
@@ -23,6 +34,7 @@ export class AccountsController {
     );
   }
 
+  @UseGuards(AuthGuard)
   @Patch('/remove/:idConta')
   async removeBalance(
     @Param('idConta') idConta: string,
@@ -34,6 +46,7 @@ export class AccountsController {
     );
   }
 
+  @UseGuards(AuthGuard)
   @Get()
   async all() {
     return await this.accountsService.all();
