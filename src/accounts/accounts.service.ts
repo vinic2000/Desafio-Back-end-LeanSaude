@@ -1,13 +1,16 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { PrismaService } from 'src/prisma.service';
 import { LogsService } from 'src/logs/logs.service';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class AccountsService {
   constructor(
     private prisma: PrismaService,
     private logsService: LogsService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async create(createAccountDto: CreateAccountDto) {
@@ -67,6 +70,8 @@ export class AccountsService {
       value: 0,
     });
 
+    await this.updateCache();
+
     return account;
   }
 
@@ -124,6 +129,8 @@ export class AccountsService {
       value: 0,
       error: '',
     });
+
+    await this.updateCache();
 
     return resultUpdate;
   }
@@ -191,10 +198,26 @@ export class AccountsService {
       error: '',
     });
 
+    await this.updateCache();
+
     return resultUpdate;
   }
 
   async all() {
-    return await this.prisma.account.findMany();
+    const result = await this.prisma.account.findMany();
+
+    const accouts = await this.cacheManager.get('accounts');
+    if (accouts) {
+      return accouts;
+    }
+
+    await this.updateCache();
+
+    return result;
+  }
+
+  async updateCache() {
+    const accounts = await this.prisma.account.findMany();
+    await this.cacheManager.set('accouts', accounts);
   }
 }
