@@ -8,6 +8,7 @@ import { faker } from '@faker-js/faker';
 import { generate } from 'gerador-validador-cpf';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { LogsService } from 'src/logs/logs.service';
+import { CacheModule } from '@nestjs/cache-manager';
 
 describe('AccountsService', () => {
   let service: AccountsService;
@@ -80,6 +81,12 @@ describe('AccountsService', () => {
         { provide: PrismaService, useValue: prismaMock },
         LogsService,
       ],
+      imports: [
+        CacheModule.register({
+          isGlobal: true,
+          ttl: 60 * 10000,
+        }),
+      ],
     }).compile();
 
     service = module.get<AccountsService>(AccountsService);
@@ -95,6 +102,7 @@ describe('AccountsService', () => {
         create: jest.fn().mockReturnValue(accountMock),
         findUnique: jest.fn().mockReturnValue(null),
         update: jest.fn().mockReturnValue(accountMock),
+        findMany: jest.fn().mockReturnValue(accountMock),
       },
 
       user: {
@@ -111,6 +119,12 @@ describe('AccountsService', () => {
         AccountsService,
         { provide: PrismaService, useValue: prismaMock },
         LogsService,
+      ],
+      imports: [
+        CacheModule.register({
+          isGlobal: true,
+          ttl: 60 * 10000,
+        }),
       ],
     }).compile();
 
@@ -139,6 +153,7 @@ describe('AccountsService', () => {
           create: jest.fn().mockReturnValue(accountMock),
           findUnique: jest.fn().mockReturnValue(accountMock),
           update: jest.fn().mockReturnValue(accountMock),
+          findMany: jest.fn().mockReturnValue(accountMock),
         },
         user: {
           findUnique: jest.fn().mockReturnValue(null),
@@ -153,6 +168,12 @@ describe('AccountsService', () => {
           AccountsService,
           { provide: PrismaService, useValue: prismaMock },
           LogsService,
+        ],
+        imports: [
+          CacheModule.register({
+            isGlobal: true,
+            ttl: 60 * 1000,
+          }),
         ],
       }).compile();
 
@@ -187,6 +208,7 @@ describe('AccountsService', () => {
           create: jest.fn().mockReturnValue(accountMock),
           findUnique: jest.fn().mockReturnValue(accountMock),
           update: jest.fn().mockReturnValue(accountMock),
+          findMany: jest.fn().mockReturnValue(accountMock),
         },
 
         user: {
@@ -203,6 +225,13 @@ describe('AccountsService', () => {
           AccountsService,
           { provide: PrismaService, useValue: prismaMock },
           LogsService,
+        ],
+
+        imports: [
+          CacheModule.register({
+            isGlobal: true,
+            ttl: 60 * 1000,
+          }),
         ],
       }).compile();
 
@@ -247,6 +276,7 @@ describe('AccountsService', () => {
           create: jest.fn().mockReturnValue(accountMock),
           findUnique: jest.fn().mockReturnValue(null),
           update: jest.fn().mockReturnValue(accountMock),
+          findMany: jest.fn().mockReturnValue(accountMock),
         },
 
         user: {
@@ -263,6 +293,13 @@ describe('AccountsService', () => {
           AccountsService,
           { provide: PrismaService, useValue: prismaMock },
           LogsService,
+        ],
+
+        imports: [
+          CacheModule.register({
+            isGlobal: true,
+            ttl: 60 * 1000,
+          }),
         ],
       }).compile();
 
@@ -336,6 +373,7 @@ describe('AccountsService', () => {
           create: jest.fn().mockReturnValue(accountMock),
           findUnique: jest.fn().mockReturnValue(null),
           update: jest.fn().mockReturnValue(accountMock),
+          findMany: jest.fn().mockReturnValue([accountMock]),
         },
 
         user: {
@@ -351,6 +389,13 @@ describe('AccountsService', () => {
           AccountsService,
           { provide: PrismaService, useValue: prismaMock },
           LogsService,
+        ],
+
+        imports: [
+          CacheModule.register({
+            isGlobal: true,
+            ttl: 60 * 1000,
+          }),
         ],
       }).compile();
 

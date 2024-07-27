@@ -15,9 +15,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ZodValidationPipe } from 'src/zodValidationPipe';
 import { userZodSchema } from './zodSchema';
 import { AuthGuard } from '../auth/auth.guard';
-import { ApiTags } from '@nestjs/swagger';
-
-@ApiTags('users')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}

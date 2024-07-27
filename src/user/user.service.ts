@@ -1,11 +1,16 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma.service';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
     if (await this.findUsingCpf(createUserDto.cpf)) {
@@ -32,11 +37,15 @@ export class UserService {
         type_user: true,
       },
     });
+
+    const users = await this.prisma.user.findMany();
+    await this.cacheManager.set('users', users);
+
     return data;
   }
 
   async findAll() {
-    return await this.prisma.user.findMany({
+    const result = await this.prisma.user.findMany({
       select: {
         cpf: true,
         email: true,
@@ -45,6 +54,16 @@ export class UserService {
         type_user: true,
       },
     });
+
+    const cacheUsers = await this.cacheManager.get('users');
+
+    if (cacheUsers) {
+      return cacheUsers;
+    }
+
+    await this.cacheManager.set('users', result);
+
+    return result;
   }
 
   async findUsingEmail(email: string) {
@@ -85,12 +104,17 @@ export class UserService {
       );
     }
 
-    return await this.prisma.user.update({
+    const user = await this.prisma.user.update({
       data: updateUserDto,
       where: {
         id: id,
       },
     });
+
+    const users = await this.prisma.user.findMany();
+    await this.cacheManager.set('users', users);
+
+    return user;
   }
 
   async remove(id: string) {
@@ -109,6 +133,9 @@ export class UserService {
         id: id,
       },
     });
+
+    const users = this.prisma.user.findMany();
+    await this.cacheManager.set('users', users);
 
     return { message: 'User deleted' };
   }
